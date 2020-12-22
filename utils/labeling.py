@@ -37,7 +37,8 @@ def date_labels(ax, startdate, enddate, raiseddates=None):
         f = 1.15
         if raiseddates is not None and date in raiseddates:
             f = 1.4
-        ax.text(pos[0] * f, pos[1] * f, '{:%d %b %Y}'.format(date), ha=ha, va=va, fontweight='bold')
+        text = '{:%d %b %Y}'.format(date).replace('01', '1')
+        ax.text(pos[0] * f, pos[1] * f, text, ha=ha, va=va, fontweight='bold')
 
         if not (i == 0 and firststart):
             ax.scatter(pos[0], pos[1], facecolor=get_foreground_color(), s=40, zorder=10)
