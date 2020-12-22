@@ -7,7 +7,7 @@ import numpy as np
 from utils.style import get_foreground_color, get_secondary_color, get_sun_colors
 
 
-def date_labels(ax, startdate, enddate, raiseddates=None):
+def date_labels(ax, startdate, enddate, distance=1.15, raiseddates=None):
     """
     adds date labels at the start of each month
 
@@ -34,9 +34,9 @@ def date_labels(ax, startdate, enddate, raiseddates=None):
         ha = 'left' if np.cos(longi) > 0.2 else 'center' if np.cos(longi) > -0.2 else 'right'
         va = 'bottom' if np.sin(longi) > 0.2 else 'center' if np.sin(longi) > -0.2 else 'top'
 
-        f = 1.15
+        f = distance
         if raiseddates is not None and date in raiseddates:
-            f = 1.4
+            f = 1.3 * distance
         text = '{:%d %b %Y}'.format(date).replace('01', '1')
         ax.text(pos[0] * f, pos[1] * f, text, ha=ha, va=va, fontweight='bold')
 

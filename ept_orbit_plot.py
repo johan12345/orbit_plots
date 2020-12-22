@@ -34,12 +34,12 @@ ept_electron = epd.ept.science.low_latency('foil', 'time')['sun']
 ept_ion = epd.ept.science.low_latency('mag', 'time')['sun']
 
 # note: this is just a summed up countrate from the sun telescope for now, not a flux/intensity/whatever.
-data = ept_ion.sum(axis=1).resample('1H').mean()
+data = ept_ion.sum(axis=1).resample('1H').mean().iloc[1:-1]
 data = np.log10(data)  # use logarithmic data
 data[np.isinf(data)] = np.nan
 data += 0.8  # arbitrary shift to get only positive values
 
-data_e = ept_electron.sum(axis=1).resample('1H').mean()
+data_e = ept_electron.sum(axis=1).resample('1H').mean().iloc[1:-1]
 data_e = np.log10(data_e)  # use logarithmic data
 data_e[np.isinf(data_e)] = np.nan
 data_e += 1.1  # arbitrary shift to get only positive values
@@ -77,6 +77,10 @@ ax.set_ylim([-1.2, 1.2])
 ax.set_xlim([-1.55, 1.1])
 plt.axis('off')
 
-plt.savefig('ept_orbit_plot.pdf')
-plt.savefig('ept_orbit_plot.png', dpi=300)
+plt.title('Solar Orbiter EPD/EPT energetic particles — first orbit', color=get_foreground_color())
+plt.text(1.05, -1.15, 'Data: Solar Orbiter/EPD (ESA & NASA) | Plot: Johan von Forstner, CAU Kiel',
+         ha='right', va='bottom', size='x-small')
+
+plt.savefig('ept_orbit_plot.pdf', bbox_inches='tight')
+plt.savefig('ept_orbit_plot.png', dpi=300, bbox_inches='tight')
 plt.show()

@@ -9,7 +9,7 @@ def set_style(fig, style):
             'font.family': 'sans-serif',
             'font.sans-serif': 'NotesEsa',
             'savefig.facecolor': '#003247',
-            'savefig.edgecolor': '#003247'
+            'savefig.edgecolor': '#003247',
         })
         fig.set_facecolor('#003247')
         fig.set_edgecolor('#003247')
