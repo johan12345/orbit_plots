@@ -20,7 +20,7 @@ set_style(fig, 'esa')
 startdate = utc.localize(dt.datetime(2020, 5, 1))
 enddate = utc.localize(dt.datetime(2020, 12, 10))
 
-dates = np.array([startdate + dt.timedelta(seconds=i) for i in np.linspace(0, (enddate - startdate).total_seconds(), 1000)])
+dates = np.array([startdate + dt.timedelta(seconds=i) for i in np.linspace(0, (enddate - startdate).total_seconds(), 5000)])
 trajectory = SOLO.position(dates)
 x = trajectory[:, 0] / au * 1e3
 y = trajectory[:, 1] / au * 1e3
@@ -57,7 +57,7 @@ for data, scale in [(data, 0.15), (data_e, -0.15)]:
 # add labels at start of track
 ax.plot([date2num(data.index[0]), date2num(data.index[0])],
         [-0.5, 0.5],
-        transform=transform + ax.transData, color=get_foreground_color(), lw=2)
+        transform=transform + ax.transData, color=get_foreground_color(), lw=2, zorder=9)
 ax.text(date2num(data.index[0]) + 5, 0.35, 'e', transform=transform + ax.transData)
 ax.text(date2num(data.index[0]) + 5, -0.9, 'ion', transform=transform + ax.transData)
 
