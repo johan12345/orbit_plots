@@ -49,7 +49,6 @@ cmap = cm.get_cmap('turbo')
 # plot ion and electron data
 for data, scale in [(data, 0.15), (data_e, -0.15)]:
     barwidth = date2num(data.index[1]) - date2num(data.index[0])
-    mask = (dates > data.index[0]) * (dates < data.index[-1])
     norm = Normalize(vmin=data.min(), vmax=data.max())
     transform = PathTranform(x, y, startdate, enddate, scale=scale)
 
