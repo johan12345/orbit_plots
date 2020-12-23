@@ -10,3 +10,6 @@ The plotting style was inspired by a plot from [McComas et al., 2019](https://ww
 Plots can be produced in a plain matplotlib style (`'plain'`) or in a style that emulates the ESA press release version
 of this plot (`'esa'`). For the latter, the `NotesEsa` font needs to be installed, which can be found in the `fonts`
 directory.
+
+<img src="img/ept_orbit_plot.png" style="width:50%"/>
+<img src="img/mag_orbit_plot.png" style="width:50%" />
