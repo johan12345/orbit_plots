@@ -1,0 +1,4 @@
+ESA font "NotesESA". Source:
+https://www.esa.int/extension/pillars/design/pillars/stylesheets/fonts/NotesESAbold.ttf
+https://www.esa.int/extension/pillars/design/pillars/stylesheets/fonts/NotesESAregular.ttf
+©ESA
