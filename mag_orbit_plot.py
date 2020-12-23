@@ -28,21 +28,23 @@ ax.plot(x, y, color=get_foreground_color(), linewidth=1, zorder=10)
 
 # load and prepare MAG data
 mag = MAGData(startdate, enddate).best_available('rtn', False)
-mag = mag.resample('5H').mean().iloc[1:-1]
-# TODO: for some reason, time resolution higher than 5H does not work
+mag = mag.resample('1H').mean().iloc[1:-1]
 b_tot = np.sqrt((mag ** 2).sum(axis=1))
 mag.insert(0, '|B|', b_tot)
 
 # plot MAG data
 transform = PathTranform(x, y, startdate, enddate, scale=0.01)
 for component in mag:
-    ax.plot(mag.index, mag[component], transform=transform + ax.transData, zorder=9, linewidth=0.5)
+    ax.plot(mag.index, mag[component], transform=transform + ax.transData, zorder=9, linewidth=0.5, markevery=1)
+    # markevery=1 is necessary when >1000 points are plotted
 
 # add labels at start of track
 transform = PathTranform(x, y, startdate, enddate, scale=0.15)
 ax.plot([date2num(mag.index[0]), date2num(mag.index[0])],
         [-0.5, 0.5],
         transform=transform + ax.transData, color=get_foreground_color(), lw=2, zorder=9)
+#ax.text(date2num(mag.index[1]), 1.5, '|B|', transform=transform + ax.transData)
+#ax.text(date2num(mag.index[1]), -1.5, '', transform=transform + ax.transData)
 
 # add arrows
 for date in [dt.datetime(2020, 9, 13)]:
