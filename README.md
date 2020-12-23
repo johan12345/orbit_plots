@@ -13,3 +13,11 @@ directory.
 
 <img src="img/ept_orbit_plot.png" width="400"/>
 <img src="img/mag_orbit_plot.png" width="400" />
+
+Requirements
+------------
+
+- Python >= 3.7
+- [SolO Loader](https://gitlab.physik.uni-kiel.de/solo/solo_loader) for loading the Solar Orbiter data
+- [ET SPICE](https://gitlab.physik.uni-kiel.de/ET/et_spice) for accessing the SPICE kernels to get the orbit data
+- [matplotlib](https://matplotlib.org/) for plotting
