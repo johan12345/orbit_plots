@@ -10,15 +10,34 @@ from pytz import utc
 from scipy.constants import au
 from solo_loader.epd import EPDData
 
-from utils.labeling import date_labels, solar_system_grid
+from utils.labeling import date_labels, solar_system_grid, get_textalign
 from utils.path_transform import PathTranform
-from utils.style import set_style, get_foreground_color
+from utils.style import set_style, get_foreground_color, get_title_font
+
+
+def combine_bins(df):
+    """
+    Combines all energy bins of a flux DataFrame
+    """
+    return ((df * df.columns.length).sum(axis=1) / df.columns.length.to_series().sum())
 
 fig, ax = plt.subplots(figsize=(6.5, 5.5))
 set_style(fig, 'esa')
 
-startdate = utc.localize(dt.datetime(2020, 5, 1))
-enddate = utc.localize(dt.datetime(2020, 12, 10))
+orbit_number = 1
+
+if orbit_number == 1:
+    title = 'first orbit'
+    startdate = utc.localize(dt.datetime(2020, 2, 28))
+    enddate = utc.localize(dt.datetime(2020, 10, 1))
+    angle = 33
+elif orbit_number == 2:
+    title = 'second orbit'
+    startdate = utc.localize(dt.datetime(2020, 10, 1))
+    enddate = utc.localize(dt.datetime(2021, 3, 1))
+    angle = 65
+else:
+    raise ValueError(f'orbit {orbit_number} not yet defined')
 
 dates = np.array([startdate + dt.timedelta(seconds=i) for i in np.linspace(0, (enddate - startdate).total_seconds(), 5000)])
 trajectory = SOLO.position(dates)
@@ -30,36 +49,38 @@ ax.plot(x, y, color=get_foreground_color(), linewidth=1, zorder=10)
 
 # load and prepare EPT data
 epd = EPDData(startdate, enddate)
-ept_electron = epd.ept.science.low_latency('foil', 'time')['sun']
-ept_ion = epd.ept.science.low_latency('mag', 'time')['sun']
+ept_electron = epd.ept.science.low_latency('foil', 'time')['sun'].to_flux(edges=True)
+ept_ion = epd.ept.science.low_latency('mag', 'time')['sun'].to_flux(edges=True)
 
-# note: this is just a summed up countrate from the sun telescope for now, not a flux/intensity/whatever.
-data = ept_ion.sum(axis=1).resample('1H').mean().iloc[1:-1]
+# calculate mean flux over all bins
+data = combine_bins(ept_ion).resample('1H').mean().iloc[1:-1]
 data = np.log10(data)  # use logarithmic data
 data[np.isinf(data)] = np.nan
-data += 0.8  # arbitrary shift to get only positive values
+data -= data.resample('3H').mean().min()  # arbitrary shift to get only positive values
 
-data_e = ept_electron.sum(axis=1).resample('1H').mean().iloc[1:-1]
+data_e = combine_bins(ept_electron).resample('1H').mean().iloc[1:-1]
 data_e = np.log10(data_e)  # use logarithmic data
 data_e[np.isinf(data_e)] = np.nan
-data_e += 1.1  # arbitrary shift to get only positive values
+data_e -= data_e.resample('3H').mean().min()  # arbitrary shift to get only positive values
 
 cmap = cm.get_cmap('turbo')
 
 # plot ion and electron data
-for data, scale in [(data, 0.15), (data_e, -0.15)]:
+for data, scale, label in [(data, 0.15, 'ion'), (data_e, -0.15, 'e')]:
     barwidth = date2num(data.index[1]) - date2num(data.index[0])
     norm = Normalize(vmin=data.min(), vmax=data.max())
     transform = PathTranform(x, y, startdate, enddate, scale=scale)
 
     ax.bar(data.index, data, transform=transform + ax.transData, color=cmap(norm(data)), width=barwidth, zorder=9)
 
+    # add label at start of track
+    ha, va = get_textalign((x[0], y[0]), outer=scale > 0)  # proper text alignment on outer and inner side
+    ax.text(date2num(data.index[0]) + 7, 0.35, label, transform=transform + ax.transData, ha=ha, va=va)
+
 # add labels at start of track
 ax.plot([date2num(data.index[0]), date2num(data.index[0])],
         [-0.5, 0.5],
         transform=transform + ax.transData, color=get_foreground_color(), lw=2, zorder=9)
-ax.text(date2num(data.index[0]) + 5, 0.35, 'e', transform=transform + ax.transData)
-ax.text(date2num(data.index[0]) + 5, -0.9, 'ion', transform=transform + ax.transData)
 
 # add arrows
 for date in [dt.datetime(2020, 3, 29), dt.datetime(2020, 5, 27), dt.datetime(2020, 9, 11)]:
@@ -67,7 +88,7 @@ for date in [dt.datetime(2020, 3, 29), dt.datetime(2020, 5, 27), dt.datetime(202
             [-0.2, 0, 0.2], transform=transform + ax.transData, color=get_foreground_color())
 
 # plot grid and date labels
-solar_system_grid(ax)
+solar_system_grid(ax, angle=angle)
 date_labels(ax, startdate, enddate, raiseddates=[
     utc.localize(dt.datetime(2020, 12, 1))
 ])
@@ -77,8 +98,9 @@ ax.set_ylim([-1.2, 1.2])
 ax.set_xlim([-1.55, 1.1])
 plt.axis('off')
 
-plt.title('Solar Orbiter EPD/EPT energetic particles — first orbit', color=get_foreground_color())
-plt.text(1.05, -1.15, 'Data: Solar Orbiter/EPD (ESA & NASA) | Plot: Johan von Forstner, CAU Kiel',
+plt.title(f'Solar Orbiter EPD/EPT energetic particles — {title}', color=get_foreground_color(),
+          fontweight=get_title_font())
+plt.text(1.05, -1.15, 'Data: Solar Orbiter/EPD/EPT | Plot: J. von Forstner, CAU Kiel',
          ha='right', va='bottom', size='x-small')
 
 plt.savefig('ept_orbit_plot.pdf', bbox_inches='tight')

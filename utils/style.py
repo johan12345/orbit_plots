@@ -45,3 +45,10 @@ def get_datelabel_font():
         return 'bold'
     else:
         return 'regular'
+
+
+def get_title_font():
+    if mpl.rcParams['lines.color'] == 'white':
+        return 'regular'
+    else:
+        return 'bold'

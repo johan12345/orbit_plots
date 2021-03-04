@@ -7,6 +7,24 @@ import numpy as np
 from utils.style import get_foreground_color, get_secondary_color, get_sun_colors, get_datelabel_font
 
 
+def get_textalign(pos, outer=True):
+    """
+    Calculates text alignment for text that should appear on the outside of the orbit (depending on the longitude)
+
+    Can also do the same for the inside.
+
+    :param pos: 2D position vector
+    :param outer: Whether to use the outer or inner edge
+    :return: horizontal and vertical alignment (strings)
+    """
+    longi = np.arctan2(pos[1], pos[0])
+    cos = np.cos(longi) if outer else - np.cos(longi)
+    sin = np.sin(longi) if outer else - np.sin(longi)
+    ha = 'left' if cos > 0.2 else 'center' if cos > -0.2 else 'right'
+    va = 'bottom' if sin > 0.2 else 'center' if sin > -0.2 else 'top'
+    return ha, va
+
+
 def date_labels(ax, startdate, enddate, distance=1.15, raiseddates=None):
     """
     adds date labels at the start of each month
@@ -29,10 +47,7 @@ def date_labels(ax, startdate, enddate, distance=1.15, raiseddates=None):
 
     for i, date in enumerate(labeldates):
         pos = SOLO.position(date) / au * 1e3
-
-        longi = np.arctan2(pos[1], pos[0])
-        ha = 'left' if np.cos(longi) > 0.2 else 'center' if np.cos(longi) > -0.2 else 'right'
-        va = 'bottom' if np.sin(longi) > 0.2 else 'center' if np.sin(longi) > -0.2 else 'top'
+        ha, va = get_textalign(pos)
 
         f = distance
         if raiseddates is not None and date in raiseddates:
