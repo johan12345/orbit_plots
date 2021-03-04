@@ -20,7 +20,10 @@ def set_style(fig, style):
 
 
 def get_foreground_color():
-    return mpl.rcParams['lines.color']
+    if mpl.rcParams['lines.color'] == 'white':
+        return 'white'
+    else:
+        return 'black'
 
 
 def get_secondary_color():
@@ -35,3 +38,10 @@ def get_sun_colors():
         return '#fffd7a', '#ffffba'
     else:
         return '#ffff00', 'k'
+
+
+def get_datelabel_font():
+    if mpl.rcParams['lines.color'] == 'white':
+        return 'bold'
+    else:
+        return 'regular'

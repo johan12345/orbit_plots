@@ -4,7 +4,7 @@ from scipy.constants import au
 import datetime as dt
 import numpy as np
 
-from utils.style import get_foreground_color, get_secondary_color, get_sun_colors
+from utils.style import get_foreground_color, get_secondary_color, get_sun_colors, get_datelabel_font
 
 
 def date_labels(ax, startdate, enddate, distance=1.15, raiseddates=None):
@@ -38,13 +38,13 @@ def date_labels(ax, startdate, enddate, distance=1.15, raiseddates=None):
         if raiseddates is not None and date in raiseddates:
             f = 1.3 * distance
         text = '{:%d %b %Y}'.format(date).replace('01', '1')
-        ax.text(pos[0] * f, pos[1] * f, text, ha=ha, va=va, fontweight='bold')
+        ax.text(pos[0] * f, pos[1] * f, text, ha=ha, va=va, fontweight=get_datelabel_font())
 
         if not (i == 0 and firststart):
             ax.scatter(pos[0], pos[1], facecolor=get_foreground_color(), s=40, zorder=10)
 
 
-def solar_system_grid(ax):
+def solar_system_grid(ax, angle):
     """
     Plots the position of the Sun and concentric circular grid lines for 0.2-1 AU
 
@@ -61,7 +61,6 @@ def solar_system_grid(ax):
                         linewidth=0.5)
         ax.add_artist(circle)
         # labels
-        angle = 56
         ax.text(- radius * np.cos(np.radians(angle)),
                 radius * np.sin(np.radians(angle)),
                 '{:.1f} AU'.format(radius),
