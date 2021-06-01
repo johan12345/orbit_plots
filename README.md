@@ -21,3 +21,8 @@ Requirements
 - [SolO Loader](https://gitlab.physik.uni-kiel.de/solo/solo_loader) for loading the Solar Orbiter data
 - [ET SPICE](https://gitlab.physik.uni-kiel.de/ET/et_spice) for accessing the SPICE kernels to get the orbit data
 - [matplotlib](https://matplotlib.org/) for plotting
+
+License
+-------
+
+The Python code in this repository is licensed under the GPL v3 (see LICENSE file). The NotesEsa font is copyrighted by the European Space Agency, it was taken from the ESA website.
